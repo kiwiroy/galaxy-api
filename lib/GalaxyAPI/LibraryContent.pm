@@ -1,4 +1,4 @@
-package GalaxyAPI::LibraryContents;
+package GalaxyAPI::LibraryContent;
 
 use strict;
 use warnings;
