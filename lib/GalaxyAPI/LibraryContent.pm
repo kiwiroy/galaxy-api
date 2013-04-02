@@ -32,8 +32,8 @@ sub new_from_hash {
 
 sub id {
     my $self = shift;
-    $self->folder_id = $_[0] if $_[0];
-    return $self->folder_id;
+    (my $id  = $self->folder_id) =~ s/^F//;
+    return $id;
 }
 
 sub folder_id        :lvalue { $_[0]->{'folder_id'};        }
@@ -43,12 +43,10 @@ sub upload_option    :lvalue { $_[0]->{'upload_option'};    }
 sub filesystem_paths :lvalue { $_[0]->{'filesystem_paths'}; }
 sub create_type      :lvalue { $_[0]->{'create_type'};      }
 
-sub _json_keys {
-    my $self = shift;
-    return ($self->SUPER::_json_keys(), 
-	    qw(folder_id        file_type 
-	       dbkey            upload_option 
-	       filesystem_paths create_type));
+sub _extra_json_keys {
+    return qw(folder_id        file_type 
+	      dbkey            upload_option 
+	      filesystem_paths create_type);
 }
 
 1;

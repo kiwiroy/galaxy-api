@@ -19,53 +19,29 @@ BEGIN {
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 
-my $api = GalaxyAPI->new(-api     => 'http://galaxy-test.pfr.co.nz/api',
-			 -api_key => 'fff137f5fda92d809b86b5ed5b9fdc78',
-			 -debug   => 0);
+#my ($library) = @{ $api->libraries([ $id ]) };
 
-$api->username = 'galaxy-admin';
-$api->password ( 'galaxy-admin' );
-warn "\n";
-diag $api->get('/workflows') , "\n";
+#diag $library->as_string;
 
-my $id;
-foreach my $workflow (@{ $api->workflows() }) {
-    diag $workflow->as_string;
-    $id = $workflow->id;
-}
+#my ($new_library) = @{ $api->libraries([], GalaxyAPI::Library->new(-name => 'HRARDS')) };
 
-my ($workflow) = @{ $api->workflows([ $id ]) };
+#diag $new_library->as_string;
 
-diag $workflow->as_string;
+# my $content = GalaxyAPI::LibraryContents->new
+#     (
+#      -folder_id        => '',
+#      -file_type        => 'auto',
+#      -dbkey            => '',
+#      -upload_option    => 'upload_paths',
+#      -filesystem_paths => '',
+#      -create_type      => 'file',
+#      );
 
-foreach my $library (@{ $api->libraries() }) {
-    diag $library->as_string;
-    $id = $library->id;
-}
+# foreach my $contents (@{ $api->library_contents([ $new_library->id ]) }) {
+#     diag $contents->as_string;
+# }
 
-my ($library) = @{ $api->libraries([ $id ]) };
-
-diag $library->as_string;
-
-my ($new_library) = @{ $api->libraries([], GalaxyAPI::Library->new(-name => 'HRARDS')) };
-
-diag $new_library->as_string;
-
-my $content = GalaxyAPI::LibraryContents->new
-    (
-     -folder_id        => '',
-     -file_type        => 'auto',
-     -dbkey            => '',
-     -upload_option    => 'upload_paths',
-     -filesystem_paths => '',
-     -create_type      => 'file',
-     );
-
-foreach my $contents (@{ $api->library_contents([ $new_library->id ]) }) {
-    diag $contents->as_string;
-}
-
-warn Dumper $api->libraries([ $new_library->id, 'contents' ], $content);
+# warn Dumper $api->libraries([ $new_library->id, 'contents' ], $content);
 
 ok(1);
 ok(1);

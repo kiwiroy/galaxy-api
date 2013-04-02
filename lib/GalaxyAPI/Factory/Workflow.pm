@@ -5,9 +5,12 @@ use warnings;
 
 use Data::Dumper;
 
+use GalaxyAPI::Utils::Scalar qw{check_ref};
 use GalaxyAPI::Workflow;
 
 use base qw{GalaxyAPI::Factory};
+
+my $type_G = 'GalaxyAPI::Workflow';
 
 sub base   { return 'workflows'; }
 
@@ -16,25 +19,26 @@ sub method {
     $method = $self->SUPER::method($data);
     return $method if $method;
 
-    if(ref($data) eq 'ARRAY') {
-	if(grep { ref($_) eq 'GalaxyAPI::Workflow'} @$data == @$data) {
+    if(check_ref($data, 'ARRAY')) {
+	if(grep { check_ref($_, $type_G) } @$data == @$data) {
 	    $method = 'post';
 	} else {
-	    warn "All members of '$data' must be GalaxyAPI::Workflow objects\n";
+	    warn "All members of '$data' must be $type_G objects\n";
 	}
-    } elsif(ref($data) eq 'GalaxyAPI::Workflow') {
+    } elsif(check_ref($data, $type_G)) {
 	$method = 'post';
     }
 
     return $method;
 }
 
-
-sub _records_from_decoded_json {
-    my ($self, $decoded) = @_;
+sub records_from_decoded_json {
+    my ($self, $decoded, $adaptor) = @_;
     my @records;
     foreach my $entry(@$decoded) {
-	push @records, GalaxyAPI::Workflow->new_from_hash( $entry );
+	my $object       = GalaxyAPI::Workflow->new_from_hash( $entry );
+	$object->adaptor = $adaptor;
+	push @records, $object;
     }
     return \@records;
 }

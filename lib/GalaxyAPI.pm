@@ -20,9 +20,13 @@ use HTTP::Cookies;
 use JSON;
 
 use GalaxyAPI::Utils::Arguments qw{rearrange};
-use GalaxyAPI::Factory::Workflow;
+use GalaxyAPI::Utils::Scalar    qw{check_ref};
+use GalaxyAPI::Factory::History;
+use GalaxyAPI::Factory::HistoryContent;
 use GalaxyAPI::Factory::Library;
 use GalaxyAPI::Factory::LibraryContent;
+use GalaxyAPI::Factory::User;
+use GalaxyAPI::Factory::Workflow;
 
 our $VERSION = 0.01;
 
@@ -49,6 +53,12 @@ sub new {
 					   autosave => 1);
     $self->username   = $username if $username;
     $self->password( $password )  if $password;
+
+    $self->{'_factories'} = { 
+	map { lc $_ => "GalaxyAPI::Factory::$_"->new() } qw(History HistoryContent
+							    Library LibraryContent
+							    User Workflow)
+	};
 
     return $self;
 }
@@ -93,8 +103,8 @@ sub request {
     my $url = $self->_add_api_key($uri);
     my $cli = $self->client;
     my $run = {
-	'get'   => sub { warn "GET\n";  $cli->GET($url);   },
-	'post'  => sub { warn "POST\n"; $cli->POST($url, $body, $head);  },
+	'get'   => sub { $cli->GET($url);   },
+	'post'  => sub { $cli->POST($url, $body, $head);  },
 	'put'   => sub { $cli->PUT($url);   },
 	'patch' => sub { $cli->PATCH($url); },
     }->{lc $m};
@@ -117,23 +127,55 @@ sub put {
     return $resp->content;
 }
 
+sub factory {
+    my ($self, $type) = @_;
+    $type = lc((split(/::/, $type))[-1]);
+    return $self->{'_factories'}{$type};
+}
+
 sub workflows {
     my $self    = shift;
-    my $factory = GalaxyAPI::Factory::Workflow->new();
+    my $factory = $self->factory('GalaxyAPI::Factory::Workflow');
     return $factory->run( $self, @_ );
 }
 
 sub libraries {
     my $self    = shift;
-    my $factory = GalaxyAPI::Factory::Library->new();
+    my $factory = $self->factory('library');
     return $factory->run( $self, @_ );
 }
 
 sub library_contents {
     my $self    = shift;
-    my $factory = GalaxyAPI::Factory::LibraryContent->new();
-    if(ref($_[0]) eq 'ARRAY') {
+    my $factory = $self->factory('LibraryContent');
+    if(check_ref($_[0], 'ARRAY')) {
 	push @{$_[0]}, 'contents' unless $_[0]->[-1] eq 'contents';
+    } else {
+	warn "need an id\n";
+    }
+    return $factory->run( $self, @_ );
+}
+
+sub users {
+    my $self    = shift;
+    my $factory = $self->factory('user');
+    return $factory->run( $self, @_ );
+}
+
+sub histories {
+    my $self    = shift;
+    my $factory = $self->factory('history');
+    return $factory->run( $self, @_ );
+}
+
+sub history_contents {
+    my $self    = shift;
+    my $factory = GalaxyAPI::Factory::HistoryContent->new();
+    if (check_ref($_[0], 'ARRAY')) {
+	push @{$_[0]}, 'contents' unless $_[0]->[-1] eq 'contents';
+    } elsif ( check_ref($_[0], 'GalaxyAPI::History') ) {
+	my $history = shift @_;
+	unshift @_, $history->contents_uri;
     } else {
 	warn "need an id\n";
     }
