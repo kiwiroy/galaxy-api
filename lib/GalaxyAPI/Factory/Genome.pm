@@ -13,6 +13,7 @@ use base qw{GalaxyAPI::Factory};
 my $type_G = 'GalaxyAPI::Genome';
 
 sub base   { return 'genomes'; }
+## null is returned all too often for these queries - use allow_nonref
 sub j      { return $_[0]->{'j'}->allow_nonref; }
 sub method {
     my ($self, $data, $method) = @_;

@@ -5,7 +5,10 @@ use warnings;
 
 use GalaxyAPI::History;
 
+use GalaxyAPI::Utils::Scalar qw{check_ref};
 use base qw{GalaxyAPI::Factory};
+
+my $type_G = 'GalaxyAPI::History';
 
 sub base   { return 'histories'; }
 
@@ -14,13 +17,13 @@ sub method {
     $method = $self->SUPER::method($data);
     return $method if $method;
 
-    if(ref($data) eq 'ARRAY') {
-	if(grep { ref($_) eq 'GalaxyAPI::History'} @$data == @$data) {
+    if(check_ref($data, 'ARRAY')) {
+	if(grep { check_ref($_, $type_G) } @$data == @$data) {
 	    $method = 'post';
 	} else {
-	    warn "All members of '$data' must be GalaxyAPI::History objects\n";
+	    warn "All members of '$data' must be $type_G objects\n";
 	}
-    } elsif(ref($data) eq 'GalaxyAPI::History') {
+    } elsif(check_ref($data, $type_G)) {
 	$method = 'post';
     }
 
@@ -29,11 +32,12 @@ sub method {
 
 
 sub records_from_decoded_json {
-    my ($self, $data) = @_;
+    my ($self, $data, $adaptor) = @_;
     my @records;
     foreach my $entry(@$data){
-	my $user = GalaxyAPI::History->new_from_hash( $entry );
-	push @records, $user;
+	my $history       = GalaxyAPI::History->new_from_hash( $entry );
+	$history->adaptor = $adaptor;
+	push @records, $history;
     }
     return \@records;
 }

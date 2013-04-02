@@ -6,7 +6,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use lib 't/lib';
-use Test::More tests => 10;
+use Test::More tests => 15;
 use TestFunctions qw{_api_object_from_env};
 use Data::Dumper;
 
@@ -61,9 +61,41 @@ SKIP: {
 	    ok( $library->id, 'library has id' );
 	    ok( $library->as_string, 'as string' );
 	    $library->fully_populate();
-	    #diag $library->dumper;
+	    diag $library->as_string;
 	}
     } if @$libraries > 0;
+
+    ##
+    ## Users
+    ##
+    my $users = $api->users();
+    isa_ok( $users, 'ARRAY', 'users returns ARRAY reference' );
+    subtest 'check_users' => sub {
+	plan tests => (scalar(@$users) * 2);
+	
+	foreach my $user( @$users ) {
+	    isa_ok( $user, 'GalaxyAPI::User' );
+	    ok( $user->id, 'user has id');
+	    $user->fully_populate();
+	    diag $user->as_string;
+	}
+    } if @$users > 0;
+
+    ##
+    ## Histories
+    ##
+    my $histories = $api->histories();
+    isa_ok( $histories, 'ARRAY', 'histories returns ARRAY reference' );
+    subtest 'check_histories' => sub {
+	plan tests => (scalar(@$histories) * 2);
+
+	foreach my $history (@$histories) {
+	    isa_ok( $history, 'GalaxyAPI::History' );
+	    ok( $history->id, 'history has id' );
+	    $history->fully_populate();
+	}
+
+    } if @$histories > 0;
 
     ##
     ## Genomes
@@ -86,3 +118,5 @@ SKIP: {
 ok( 1 );
 ok( 1 );
 ok( 1 );
+ok( 1 );
+

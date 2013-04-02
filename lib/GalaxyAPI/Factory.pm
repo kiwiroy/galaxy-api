@@ -44,6 +44,14 @@ sub records_from_decoded_json {
 
 sub j { $_[0]->{'j'}; }
 
+sub json_decode {
+    my ($self, $input, $output) = @_;
+    my $retval = 0;
+    eval     { $$output = $self->j->decode( $input ); };
+    $@ && do { warn "$@\n"; $retval = 1;              };
+    return $retval;
+}
+
 sub run {
     my ($self, $api, $path, $body, $header) = @_;
     my @objects;
@@ -61,12 +69,8 @@ sub run {
     return \@objects;
 }
 
-sub populate {
-    $_[0]->fully_populate( $_[1], $_[2], 1 );
-}
-
 ## this ia a GET only operation
-sub fully_populate {
+sub populate {
     my ($self, $api, $input, $recurse) = @_;
 
     foreach my $obj(@{ ensure_array( $input ) }) {
@@ -74,15 +78,17 @@ sub fully_populate {
 	    my $detail   = $obj->detail_uri();
 	    my $response = $api->request( 'get', $self->_make_path($detail) );
 	    if($response->is_success) {
-		my $data     = $self->j->decode( $response->content );
-		$obj->augment_from_hash( $data );
+		my $data;
+		if($self->json_decode( $response->content, \$data ) == 0){
+		    $obj->augment_from_hash( $data );
+		}
 	    }
 	}
 
 	my $content_factory = $self->content_factory( $api );
 	if ($content_factory) {
 	    my $contents = $content_factory->run( $api, uri_array( $obj->contents_url ) );
-	    $content_factory->fully_populate($api, $contents) if $recurse;
+	    $content_factory->populate($api, $contents, 1) if $recurse;
 	    $obj->contents( $contents );
 	}
     }
@@ -100,9 +106,10 @@ sub method {
 }
 
 sub produce {
-    my ($self, $response, $adaptor) = @_;
-    my $data = $self->j->decode( $response->content );
-    ## TODO: JSON error handling etc...
+    my ($self, $response, $adaptor, $data) = @_;
+    if($self->json_decode( $response->content, \$data )){
+	return [];
+    }
     return $self->records_from_decoded_json( ensure_array($data), $adaptor );
 }
 

@@ -16,8 +16,8 @@ sub api     { return $_[0]->[0]; }
 sub factory { return $_[0]->[1]; }
 
 sub populate {
-    my ($self, $object) = @_;
-    $self->factory->populate($self->api, $object);
+    my ($self, $object, $recurse) = @_;
+    $self->factory->populate($self->api, $object, $recurse);
 }
 
 1;

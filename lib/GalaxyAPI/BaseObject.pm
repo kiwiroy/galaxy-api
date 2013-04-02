@@ -20,7 +20,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Scalar::Util qw{blessed};
-use GalaxyAPI::Utils::Scalar qw{uri_array};
+use GalaxyAPI::Utils::Scalar qw{uri_array check_ref};
 use GalaxyAPI::Utils::Arguments qw{rearrange};
 
 =head2 new
@@ -64,6 +64,8 @@ sub new_from_hash {
 
 sub augment_from_hash {
     my ($self, $hash) = @_;
+    return $self unless (ref $hash);
+
     if (blessed $self) {
 	## direct copy - overwritting whatever is in $self ...
 	if (exists($hash->{'id'}) && $self->id eq $hash->{'id'}) {
@@ -114,8 +116,16 @@ sub require_detail {
 
 sub fully_populate {
     my $self = shift;
+    $self->populate(1);
+    return $self;
+}
+
+sub populate {
+    my $self = shift;
     if ($self->require_detail){
-	$self->adaptor->populate( $self );
+	$self->adaptor && do {
+	    $self->adaptor->populate( $self, @_ );
+	};
     }
     return $self;
 }
