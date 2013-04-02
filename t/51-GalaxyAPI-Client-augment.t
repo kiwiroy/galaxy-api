@@ -61,9 +61,25 @@ SKIP: {
 	    ok( $library->id, 'library has id' );
 	    ok( $library->as_string, 'as string' );
 	    $library->fully_populate();
-	    diag $library->dumper;
+	    #diag $library->dumper;
 	}
     } if @$libraries > 0;
+
+    ##
+    ## Genomes
+    ##
+    my $genomes = $api->genomes();
+    isa_ok( $genomes, 'ARRAY', 'genomes returns ARRAY reference' );
+    subtest 'check_genomes' => sub {
+	plan tests => (scalar(@$genomes) * 1);
+	
+	foreach my $genome (@$genomes) {
+	    isa_ok( $genome, 'GalaxyAPI::Genome' );
+	    $genome->fully_populate();
+	    diag $genome->as_string;
+	}
+    } if @$genomes > 0;
+
 
 }
 

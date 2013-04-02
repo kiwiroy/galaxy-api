@@ -13,7 +13,7 @@ use base qw{GalaxyAPI::BaseObject};
 sub new {
     my $pkg  = shift;
     my ($desc, $name, $reference, $next_chroms, $prev_chroms, $chrs, 
-	$start_idx, $owner) 
+	$start_index, $owner) 
 	= rearrange([qw(DESCRIPTION NAME REFERENCE NEXT_CHROMS PREV_CHROMS 
 			CHROM_INFO START_INDEX OWNER)], @_);
     my $self = bless {
@@ -42,7 +42,7 @@ sub new_from_hash {
     } else {
 	my $obj = {};
 	if(check_ref($_[0], 'ARRAY')) {
-	    my ($desc, $name) = @{$_[0]};
+	    my ($desc, $name, $owner) = @{$_[0]};
 	    $obj = { 
 		description => $desc,
 		name        => $name,
@@ -55,7 +55,7 @@ sub new_from_hash {
     }
     return $self;
 }
-
+sub description :lvalue { $_[0]->{'description'}; }
 sub reference   :lvalue { $_[0]->{'reference'};   }
 sub next_chroms :lvalue { $_[0]->{'next_chroms'}; }
 sub prev_chroms :lvalue { $_[0]->{'prev_chroms'}; }

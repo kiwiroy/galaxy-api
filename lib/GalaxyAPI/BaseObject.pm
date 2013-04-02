@@ -98,7 +98,7 @@ sub adaptor :lvalue { $_[0]->{'adaptor'}; }
 
 sub _json_keys {
     my $self = shift;
-    return (qw{id url name});
+    return (qw{id url name}, $self->_extra_json_keys);
 }
 
 sub _extra_json_keys { return (); }

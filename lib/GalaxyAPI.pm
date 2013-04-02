@@ -21,6 +21,7 @@ use JSON;
 
 use GalaxyAPI::Utils::Arguments qw{rearrange};
 use GalaxyAPI::Utils::Scalar    qw{check_ref};
+use GalaxyAPI::Factory::Genome;
 use GalaxyAPI::Factory::History;
 use GalaxyAPI::Factory::HistoryContent;
 use GalaxyAPI::Factory::Library;
@@ -57,7 +58,7 @@ sub new {
     $self->{'_factories'} = { 
 	map { lc $_ => "GalaxyAPI::Factory::$_"->new() } qw(History HistoryContent
 							    Library LibraryContent
-							    User Workflow)
+							    User Workflow Genome)
 	};
 
     return $self;
@@ -170,7 +171,7 @@ sub histories {
 
 sub history_contents {
     my $self    = shift;
-    my $factory = GalaxyAPI::Factory::HistoryContent->new();
+    my $factory = $self->factory('HistoryContent');
     if (check_ref($_[0], 'ARRAY')) {
 	push @{$_[0]}, 'contents' unless $_[0]->[-1] eq 'contents';
     } elsif ( check_ref($_[0], 'GalaxyAPI::History') ) {
@@ -180,6 +181,12 @@ sub history_contents {
 	warn "need an id\n";
     }
     return $factory->run( $self, @_ );
+}
+
+sub genomes {
+    my $self    = shift;
+    my $factory = $self->factory('genome');
+    $factory->run( $self, @_ );
 }
 
 ## -------------------------------------------------------------------

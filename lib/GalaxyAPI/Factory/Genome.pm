@@ -12,8 +12,8 @@ use base qw{GalaxyAPI::Factory};
 
 my $type_G = 'GalaxyAPI::Genome';
 
-sub base   { return 'workflows'; }
-
+sub base   { return 'genomes'; }
+sub j      { return $_[0]->{'j'}->allow_nonref; }
 sub method {
     my ($self, $data, $method) = @_;
     $method = $self->SUPER::method($data);

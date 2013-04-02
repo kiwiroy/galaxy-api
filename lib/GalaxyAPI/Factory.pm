@@ -73,8 +73,10 @@ sub fully_populate {
 	if ($obj->require_detail) {
 	    my $detail   = $obj->detail_uri();
 	    my $response = $api->request( 'get', $self->_make_path($detail) );
-	    my $data     = $self->j->decode( $response->content );
-	    $obj->augment_from_hash( $data );
+	    if($response->is_success) {
+		my $data     = $self->j->decode( $response->content );
+		$obj->augment_from_hash( $data );
+	    }
 	}
 
 	my $content_factory = $self->content_factory( $api );

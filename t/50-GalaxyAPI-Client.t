@@ -142,8 +142,21 @@ SKIP: {
 
     } if @$histories > 0;
 
+    ##
+    ## Genomes
+    ##
+    my $genomes = $api->genomes();
+    isa_ok( $genomes, 'ARRAY', 'genomes returns ARRAY reference' );
+    subtest 'check_genomes' => sub {
+	plan tests => (scalar(@$genomes) * 5);
+	foreach my $genome (@$genomes) {
+	    isa_ok( $genome, 'GalaxyAPI::Genome' );
+	    ok( $genome->id,          'genome has id' );
+	    ok( $genome->name,        'genome has name' );
+	    ok( $genome->description, 'genome has description' );
+	    ok( $genome->url,         'genome has url' );
+	}
+    } if @$genomes > 0;
 }
 
-ok( 1 );
-ok( 1 );
 
