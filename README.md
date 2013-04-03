@@ -1,41 +1,40 @@
-galaxy-api
-==========GalaxyAPI version 0.01
-======================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+# GalaxyAPI version 0.01
+The [Galaxy](http://www.galaxyproject.org) application provides an application programming 
+interface ([API](http://wiki.galaxyproject.org/Learn/API)) to export the data structures for 
+external use.  This software provides programmatic access for Perl developers without the 
+need to author their own custom solution.
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
-
-INSTALLATION
+## Installation
 
 To install this module type the following:
 
-   perl Makefile.PL
-   make
-   make test
-   make install
+```bash
+perl Makefile.PL
+make
+make test
+make install
+```
 
-DEPENDENCIES
+## Dependencies
 
 This module requires these other modules and libraries:
+```text
+Exporter
+HTTP::Cookies
+HTTP::Status
+JSON
+REST::Client
+Scalar:Util
+URI::Split
+```
+and very possibly others on which they depend...
 
-  blah blah blah
-
-COPYRIGHT AND LICENCE
-
-Put the correct copyright and licence information here.
-
-Copyright (C) 2013 by Roy Storey
+## Copyright and Licence
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.8 or,
 at your option, any later version of Perl 5 you may have available.
 
+Above all, make sure it copied right and lies make sense.
 
