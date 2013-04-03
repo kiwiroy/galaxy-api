@@ -1,8 +1,7 @@
-
 # GalaxyAPI version 0.01
 The [Galaxy](http://www.galaxyproject.org) application provides an application programming 
 interface ([API](http://wiki.galaxyproject.org/Learn/API)) to export the data structures for 
-external use.  This software provides programmatic access for Perl developers without the 
+external use / *"... everyone"*.  This software provides programmatic access for Perl developers without the 
 need to author their own custom solution.
 
 ## Installation
@@ -18,7 +17,7 @@ make install
 
 ## Dependencies
 
-This module requires these other modules and libraries:
+As with all good and bad software there are dependencies. This module requires these other modules and libraries:
 ```text
 Exporter
 HTTP::Cookies
